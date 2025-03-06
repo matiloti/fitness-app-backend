@@ -1,0 +1,27 @@
+components:
+    requestBodies:
+        FoodItem:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: 'http://localhost:8080/docs/schemas.yml#/components/schemas/PostFoodItemRequest'
+                    examples:
+                        PostFoodItemRequestBasicExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestBasicExample'
+                        PostFoodItemRequestWithoutPortionsExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestWithoutPortionsExample'
+                        PostFoodItemRequestTwoExistingPortionsExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestTwoExistingPortionsExample'
+                        PostFoodItemRequestPortionWithoutDefaultSizeExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestPortionWithoutDefaultSizeExample'
+                        PostFoodItemRequestMultiplePortionsExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestMultiplePortionsExample'
+                        PostFoodItemRequestTwoNutritionalValuesExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestTwoNutritionalValuesExample'
+                        PostFoodItemRequestCreateBrandExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestCreateBrandExample'
+                        PostFoodItemRequestCreatePortionExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestCreatePortionExample'
+                        PostFoodItemRequestCreateBrandAndPortionExample:
+                            $ref: 'http://localhost:8080/docs/examples.yml#/components/examples/PostFoodItemRequestCreateBrandAndPortionExample'

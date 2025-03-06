@@ -1,0 +1,46 @@
+components:
+    responses:
+        PostFoodItem201:
+            $ref: 'http://localhost:8080/docs/responses.yml#/components/responses/PostFoodItem201'
+        GetFoodItemById200:
+            $ref: 'http://localhost:8080/docs/responses.yml#/components/responses/GetFoodItemById200'
+        BadRequest400:
+            $ref: 'http://localhost:8080/docs/responses.yml#/components/responses/BadRequest400'
+        NotFound404:
+            $ref: 'http://localhost:8080/docs/responses.yml#/components/responses/NotFound404'
+        ServerError500:
+            $ref: 'http://localhost:8080/docs/responses.yml#/components/responses/ServerError500'
+paths:
+    /food:
+        post:
+            tags: [Food]
+            summary: Creates a new food item
+            description: This operation creates a new food item with a brand, nutritional values, and an optional portions array. This endpoint allows the caller to create a new brand and portion if they don't exist.
+            requestBody:
+                $ref: 'http://localhost:8080/docs/requestBodies.yml#/components/requestBodies/FoodItem'
+            responses:
+                '201':
+                    $ref: '#/components/responses/PostFoodItem201'
+                '400':
+                    $ref: '#/components/responses/BadRequest400'
+                '500':
+                    $ref: '#/components/responses/ServerError500'
+    /food/{foodId}:
+        get:
+            tags: [Food]
+            summary: Gets a food item
+            description: This operation gets a full food item by ID
+            parameters:
+                -   name: foodId
+                    in: path
+                    required: true
+                    schema:
+                        type: integer
+                        format: int64
+            responses:
+                '200':
+                    $ref: '#/components/responses/GetFoodItemById200'
+                '404':
+                    $ref: '#/components/responses/NotFound404'
+                '500':
+                    $ref: '#/components/responses/ServerError500'

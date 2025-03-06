@@ -1,0 +1,259 @@
+components:
+    examples:
+        PostFoodItemRequestBasicExample:
+            summary: A basic food item post request example
+            description: |
+                This example creates a new food item:
+                
+                    - Where the brand exists
+                    - It is provided one nutritional value
+                    - It is provided one existing portion (without size provided)
+            value:
+                name: "Meat"
+                brand:
+                    id: 12345
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+                portions:
+                    -   id: 12345
+        PostFoodItemRequestWithoutPortionsExample:
+            summary: A basic food item post request example
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the brand exists
+                    - It is provided one nutritional value
+                    - It is NOT provided any portion
+            value:
+                name: "Meat"
+                brand:
+                    id: 12345
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+        PostFoodItemRequestTwoExistingPortionsExample:
+            summary: A food item post request example but with two portions
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the brand exists
+                    - It is provided one nutritional value
+                    - It is provided two existing portions (without size provided)
+            value:
+                name: "Meat"
+                brand:
+                    id: 12345
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+                portions:
+                    -   id: 12345
+                    -   id: 67890
+        PostFoodItemRequestPortionWithoutDefaultSizeExample:
+            summary: A food item post request example with a not-default portion size
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the brand exists
+                    - It is provided one nutritional value
+                    - It is provided one existing portion BUT providing a new portion size (which overrides the default one)
+            value:
+                name: "Meat"
+                brand:
+                    id: 12345
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+                portions:
+                    -   id: 12345
+                        size: 30
+        PostFoodItemRequestMultiplePortionsExample:
+            summary: A food item post request example combining multiple portion options
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the brand exists
+                    - It is provided one nutritional value
+                    - It is provided multiple portions:
+                        > One which exists (with default size value)
+                        > One which exists BUT providing a new portion size (which overrides the default one)
+                        > One which DOESN'T exist (it's created)
+            value:
+                name: "Meat"
+                brand:
+                    id: 12345
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+                portions:
+                    -   id: 12345
+                    -   id: 67890
+                        size: 30
+                    -   description: "per teaspoon"
+                        unitType:
+                            id: 1
+                        size: 30
+        PostFoodItemRequestTwoNutritionalValuesExample:
+            summary: A food item post request example with two nutritional values provided
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the brand exists
+                    - It is provided two nutritional values
+                    - It is provided one existing portion (without size provided)
+            value:
+                name: "Meat"
+                brand:
+                    name: "The Best Grocery Store"
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+                    -   unitType:
+                            id: 2
+                        unitValue: 100
+                        kcal: 323.5
+                        fat: 13.32
+                        carbs: 53.5
+                        protein: 19.25
+                        fiber: 4.25
+                        saturatedFat: 4.8
+                        salt: 2.4
+                        sugar: 13.01
+                portions:
+                    -   id: 12345
+        PostFoodItemRequestCreateBrandExample:
+            summary: A food item post request example with a new brand
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the DOESN'T brand exists (it's created)
+                    - It is provided one nutritional value
+            value:
+                name: "Meat"
+                brand:
+                    name: "The Best Grocery Store"
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+        PostFoodItemRequestCreatePortionExample:
+            summary: A food item post request example with a new portion
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the brand exists
+                    - It is provided one nutritional value
+                    - It is provided a NEW portion which doesn't exist (it's created). The food item it's going to use the default portion size supplied.
+            value:
+                name: "Meat"
+                brand:
+                    id: 12345
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+                portions:
+                    -   description: "per teaspoon"
+                        unitType:
+                            id: 1
+                        size: 30
+        PostFoodItemRequestCreateBrandAndPortionExample:
+            summary: A food item post request example with a new brand and portion
+            description: |-
+                This example creates a new food item:
+                
+                    - Where the brand DOESN'T exists (it's created)
+                    - It is provided one nutritional value
+                    - It is provided a NEW portion which doesn't exist (it's created). The food item it's going to use the default portion size supplied.
+            value:
+                name: "Meat"
+                brand:
+                    name: "The Best Grocery Store"
+                nutritionalValues:
+                    -   unitType:
+                            id: 1
+                        unitValue: 100
+                        kcal: 312.5
+                        fat: 10.32
+                        carbs: 45.5
+                        protein: 18.25
+                        fiber: 2.25
+                        saturatedFat: 4.5
+                        salt: 2.2
+                        sugar: 12.75
+                portions:
+                    -   description: "per teaspoon"
+                        unitType:
+                            id: 1
+                        size: 30

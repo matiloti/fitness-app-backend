@@ -1,0 +1,18 @@
+openapi: 3.0.3
+info:
+    title: Fitness app
+    description: |-
+        This is a fitness application API
+    contact:
+        email: jeje@gmail.com
+    version: 0.0.1-SNAPSHOT
+servers:
+    - url: http://localhost:8080/
+tags:
+    -   name: Food
+        description: Endpoints to manage food items
+paths:
+    /food:
+        $ref: 'http://localhost:8080/docs/paths.yml#/paths/~1food'
+    /food/{foodId}:
+        $ref: 'http://localhost:8080/docs/paths.yml#/paths/~1food~1{foodId}'

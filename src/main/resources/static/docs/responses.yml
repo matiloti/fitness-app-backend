@@ -1,0 +1,35 @@
+components:
+    schemas:
+        RFC7807ErrorResponse:
+            $ref: 'http://localhost:8080/docs/schemas.yml#/components/schemas/RFC7807ErrorResponse'
+        GetFoodItemByIdResponse:
+            $ref: 'http://localhost:8080/docs/schemas.yml#/components/schemas/GetFoodItemByIdResponse'
+    responses:
+        PostFoodItem201:
+            description: Food item successfully created
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            id:
+                                description: The new food item ID
+                                type: integer
+                                format: int32
+                                example: 12345
+        GetFoodItemById200:
+            description: Successful operation
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/GetFoodItemByIdResponse'
+        BadRequest400:
+            description: Bad request
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/RFC7807ErrorResponse'
+        NotFound404:
+            description: Not found
+        ServerError500:
+            description: Unexpected server error

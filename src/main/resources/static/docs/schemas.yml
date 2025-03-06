@@ -1,0 +1,267 @@
+components:
+    schemas:
+        Brand:
+            description: Represents a food item brand
+            type: object
+            properties:
+                id:
+                    description: Brand ID
+                    type: integer
+                    format: int32
+                    example: 12345
+                name:
+                    description: Brand name
+                    type: string
+                    example: "The Best Grocery Store"
+        UnitType:
+            description: Represents the available unit types for any food item nutritional value (commonly grams and mililiters)
+            type: object
+            properties:
+                id:
+                    description: The unit type ID
+                    type: integer
+                    format: int32
+                    example: 1
+                name:
+                    description: The unit type name
+                    type: string
+                    example: "grams"
+                abbreviation:
+                    description: The unit type abbreviation
+                    type: string
+                    example: "g"
+        NutritionalValues:
+            description: Represents all nutritional values for a food item
+            type: object
+            properties:
+                kcal:
+                    type: number
+                    format: float
+                    description: The food item kcals per unit value
+                    example: 312.5
+                fat:
+                    type: number
+                    format: float
+                    description: The food item grams of fat per unit value
+                    example: 10.32
+                carbs:
+                    type: number
+                    format: float
+                    description: The food item grams of carbs per unit value
+                    example: 45.5
+                protein:
+                    type: number
+                    format: float
+                    description: The food item grams of protein per unit value
+                    example: 18.25
+                fiber:
+                    type: number
+                    format: float
+                    description: The food item grams of fiber per unit value
+                    example: 2.25
+                saturatedFat:
+                    type: number
+                    format: float
+                    description: The food item grams of saturated fat per unit value
+                    example: 4.5
+                salt:
+                    type: number
+                    format: float
+                    description: The food item grams of salt per unit value
+                    example: 2.2
+                sugar:
+                    type: number
+                    format: float
+                    description: The food item grams of sugar per unit value
+                    example: 12.75
+        Portion:
+            type: object
+            properties:
+                id:
+                    description: The ID of the portion
+                    type: integer
+                    format: int32
+                    example: 12345
+                description:
+                    description: The food item portion description (per portion, per serving, per teaspoon, etc)
+                    type: string
+                    example: "per teaspoon"
+                unitType:
+                    $ref: '#/components/schemas/UnitType'
+                size:
+                    description: Portion size in the unit type specified
+                    type: integer
+                    format: int32
+                    example: 30
+        PostFoodItemRequest:
+            type: object
+            required:
+                - name
+                - brand
+                - nutritionalValues
+            properties:
+                name:
+                    description: Food item name
+                    type: string
+                    example: "Meat"
+                    nullable: true
+                brand:
+                    oneOf:
+                        -   type: object
+                            description: This option to refer to an existing brand
+                            required:
+                                -   id
+                            properties:
+                                id:
+                                    description: Brand ID
+                                    type: integer
+                                    format: int32
+                                    example: 12345
+                        -   type: object
+                            description: This option to create a new brand
+                            required:
+                                -   name
+                            properties:
+                                name:
+                                    description: Brand name
+                                    type: string
+                                    example: "The Best Grocery Store"
+                nutritionalValues:
+                    type: array
+                    items:
+                        allOf:
+                            -   type: object
+                                required:
+                                    -   unitType
+                                    -   unitValue
+                                properties:
+                                    unitType:
+                                        type: object
+                                        properties:
+                                            id: # Just the ID because unit types are not expected to be created by normal users, so it will be always a reference to an already existing ID
+                                                description: The unit type ID for these nutritional values
+                                                type: integer
+                                                format: int32
+                                                example: 1
+                                    unitValue:
+                                        description: The unit value (per 100g = 100, per 100ml = 100, etc)
+                                        type: integer
+                                        format: int32
+                                        example: 100
+                            -   $ref: '#/components/schemas/NutritionalValues'
+                portions:
+                    type: array
+                    items:
+                        allOf:
+                            -   type: object
+                                required:
+                                    -   size
+                                properties:
+                                    size:
+                                        description: The food item portion size value (30, 325, 5...) in the unit type specified
+                                        type: integer
+                                        format: int32
+                                        example: 30
+                            -   oneOf:
+                                    -   type: object
+                                        description: This option to refer to an existing portion
+                                        required:
+                                            -   id
+                                        properties:
+                                            id:
+                                                description: The ID that references a portion type
+                                                type: integer
+                                                format: int32
+                                                example: 12345
+                                            size:
+                                                description: The food item portion size value (30, 325, 5...) in the unit type specified. If not specified, the default portion size is applied.
+                                                type: integer
+                                                format: int32
+                                                example: 30
+                                    -   type: object
+                                        description: This option to create a new portion
+                                        required:
+                                            -   description
+                                            -   unitType
+                                            -   size
+                                        properties: 
+                                            description:
+                                                description: The food item portion description (per portion, per serving, per teaspoon, etc)
+                                                type: string
+                                                example: "per teaspoon"
+                                            unitType:
+                                                type: object
+                                                required:
+                                                    -   id
+                                                properties:
+                                                    id: # Just the ID because unit types are not expected to be created by normal users, so it will be always a reference to an already existing ID
+                                                        description: The unit type ID for these nutritional values
+                                                        type: integer
+                                                        format: int32
+                                                        example: 1
+                                                size:
+                                                    description: The food item portion size value by default (30, 325, 5...) in the unit type specified
+                                                    type: integer
+                                                    format: int32
+                                                    example: 30
+        GetFoodItemByIdResponse:
+            type: object
+            properties:
+                id:
+                    description: Food item ID
+                    type: integer
+                    format: int32
+                    example: 12345
+                name:
+                    description: Food item name
+                    type: string
+                    example: "Meat"
+                brand:
+                    $ref: '#/components/schemas/Brand'
+                nutritionalValues:
+                    type: array
+                    items:
+                        allOf:
+                            -   type: object
+                                properties:
+                                    id:
+                                        description: The ID of this food item nutritional values
+                                        type: integer
+                                        format: int32
+                                        example: 12345
+                                    unitType:
+                                        $ref: '#/components/schemas/UnitType'
+                                    unitValue:
+                                        description: The unit value (per 100g = 100, per 100ml = 100, etc)
+                                        type: integer
+                                        format: int32
+                                        example: 100
+                            -   $ref: '#/components/schemas/NutritionalValues'
+                portions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Portion'
+        RFC7807ErrorResponse:
+            type: object
+            properties:
+                type:
+                    description: This field its an URI containing this error documentation which explains it in detail
+                    type: string
+                    example: "https://example.com/brands/not-exist"
+                title:
+                    description: A short, human-readable summary of the problem
+                    type: string
+                    example: Brand name already exists
+                status:
+                    description: The HTTP status code of this error. It's a good practice to preserve it even if it is redundant with the HTTP status code as proxies or middlewares might affect it before it reaches the client
+                    type: integer
+                    format: int32
+                    example: 400
+                detail: 
+                    description: A more detailed explanation specific to this instance
+                    type: string
+                    example: "The provided brand name already exists"
+                instance:
+                    description: A URI reference identifying the specific occurrence of the error
+                    type: string
+                    example: "/brands"
