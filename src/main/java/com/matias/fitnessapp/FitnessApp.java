@@ -1,4 +1,4 @@
-package com.matias;
+package com.matias.fitnessapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
