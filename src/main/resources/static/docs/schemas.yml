@@ -14,7 +14,7 @@ components:
                     type: string
                     example: "The Best Grocery Store"
         UnitType:
-            description: Represents the available unit types for any food item nutritional value (commonly grams and mililiters)
+            description: Represents the available unit types (commonly grams or mililiters)
             type: object
             properties:
                 id:
@@ -27,9 +27,24 @@ components:
                     type: string
                     example: "grams"
                 abbreviation:
-                    description: The unit type abbreviation
+                    description: The unit abbreviation
                     type: string
                     example: "g"
+        StandardPortionType:
+            description: Represents the available standard portion types for nutritional values (commonly per 100 grams or per 100 mililiters)
+            type: object
+            properties:
+                id:
+                    description: The standard portion type ID
+                    type: integer
+                    format: int32
+                    example: 1
+                unitType:
+                    $ref: '#/components/schemas/UnitType'
+                value:
+                    description: The standard portion value (if per 100g/100ml, its 100)
+                    type: int32
+                    example: 100
         NutritionalValues:
             description: Represents all nutritional values for a food item
             type: object
@@ -132,78 +147,62 @@ components:
                         allOf:
                             -   type: object
                                 required:
-                                    -   unitType
-                                    -   unitValue
+                                    -   standardPortionType
                                 properties:
-                                    unitType:
+                                    standardPortionType:
                                         type: object
                                         properties:
-                                            id: # Just the ID because unit types are not expected to be created by normal users, so it will be always a reference to an already existing ID
-                                                description: The unit type ID for these nutritional values
+                                            id: # Just the ID because the standard portion types are not expected to be created by normal users, so it will be always a reference to an already existing ID
+                                                description: The standard portion type ID for these nutritional values
                                                 type: integer
                                                 format: int32
                                                 example: 1
-                                    unitValue:
-                                        description: The unit value (per 100g = 100, per 100ml = 100, etc)
-                                        type: integer
-                                        format: int32
-                                        example: 100
                             -   $ref: '#/components/schemas/NutritionalValues'
                 portions:
                     type: array
                     items:
-                        allOf:
+                        oneOf:
                             -   type: object
+                                description: This option to refer to an existing portion
                                 required:
-                                    -   size
+                                    -   id
                                 properties:
+                                    id:
+                                        description: The ID that references a portion type
+                                        type: integer
+                                        format: int32
+                                        example: 12345
                                     size:
-                                        description: The food item portion size value (30, 325, 5...) in the unit type specified
+                                        description: The food item portion size value (30, 325, 5...) in the unit type specified. If not specified, the default portion size is applied.
                                         type: integer
                                         format: int32
                                         example: 30
-                            -   oneOf:
-                                    -   type: object
-                                        description: This option to refer to an existing portion
+                            -   type: object
+                                description: This option to create a new portion
+                                required:
+                                    -   description
+                                    -   unitType
+                                    -   size
+                                properties: 
+                                    description:
+                                        description: The food item portion description (per portion, per serving, per teaspoon, etc)
+                                        type: string
+                                        example: "per teaspoon"
+                                    unitType:
+                                        type: object
                                         required:
                                             -   id
                                         properties:
-                                            id:
-                                                description: The ID that references a portion type
+                                            id: # Just the ID because unit types are not expected to be created by normal users, so it will be always a reference to an already existing ID
+                                                description: The unit type ID for this portion
                                                 type: integer
                                                 format: int32
-                                                example: 12345
-                                            size:
-                                                description: The food item portion size value (30, 325, 5...) in the unit type specified. If not specified, the default portion size is applied.
-                                                type: integer
-                                                format: int32
-                                                example: 30
-                                    -   type: object
-                                        description: This option to create a new portion
-                                        required:
-                                            -   description
-                                            -   unitType
-                                            -   size
-                                        properties: 
-                                            description:
-                                                description: The food item portion description (per portion, per serving, per teaspoon, etc)
-                                                type: string
-                                                example: "per teaspoon"
-                                            unitType:
-                                                type: object
-                                                required:
-                                                    -   id
-                                                properties:
-                                                    id: # Just the ID because unit types are not expected to be created by normal users, so it will be always a reference to an already existing ID
-                                                        description: The unit type ID for these nutritional values
-                                                        type: integer
-                                                        format: int32
-                                                        example: 1
-                                                size:
-                                                    description: The food item portion size value by default (30, 325, 5...) in the unit type specified
-                                                    type: integer
-                                                    format: int32
-                                                    example: 30
+                                                example: 1
+                                    size:
+                                        description: The food item portion default size value (30, 325, 5...) in the unit type specified
+                                        type: integer
+                                        format: int32
+                                        example: 30
         GetFoodItemByIdResponse:
             type: object
             properties:
@@ -229,13 +228,8 @@ components:
                                         type: integer
                                         format: int32
                                         example: 12345
-                                    unitType:
-                                        $ref: '#/components/schemas/UnitType'
-                                    unitValue:
-                                        description: The unit value (per 100g = 100, per 100ml = 100, etc)
-                                        type: integer
-                                        format: int32
-                                        example: 100
+                                    standardPortionType:
+                                        $ref: '#/components/schemas/StandardPortionType'
                             -   $ref: '#/components/schemas/NutritionalValues'
                 portions:
                     type: array

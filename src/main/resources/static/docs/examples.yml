@@ -13,9 +13,8 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -39,9 +38,8 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -63,9 +61,8 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -90,9 +87,8 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -120,9 +116,8 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -150,11 +145,10 @@ components:
             value:
                 name: "Meat"
                 brand:
-                    name: "The Best Grocery Store"
+                    id: 12345
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -163,9 +157,8 @@ components:
                         saturatedFat: 4.5
                         salt: 2.2
                         sugar: 12.75
-                    -   unitType:
+                    -   standardPortionType:
                             id: 2
-                        unitValue: 100
                         kcal: 323.5
                         fat: 13.32
                         carbs: 53.5
@@ -188,9 +181,8 @@ components:
                 brand:
                     name: "The Best Grocery Store"
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -212,9 +204,8 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
@@ -241,9 +232,8 @@ components:
                 brand:
                     name: "The Best Grocery Store"
                 nutritionalValues:
-                    -   unitType:
+                    -   standardPortionType:
                             id: 1
-                        unitValue: 100
                         kcal: 312.5
                         fat: 10.32
                         carbs: 45.5
