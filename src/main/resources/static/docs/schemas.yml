@@ -30,7 +30,7 @@ components:
                     description: The unit abbreviation
                     type: string
                     example: "g"
-        StandardPortionType:
+        StandardPortion:
             description: Represents the available standard portion types for nutritional values (commonly per 100 grams or per 100 mililiters)
             type: object
             properties:
@@ -147,9 +147,9 @@ components:
                         allOf:
                             -   type: object
                                 required:
-                                    -   standardPortionType
+                                    -   standardPortion
                                 properties:
-                                    standardPortionType:
+                                    standardPortion:
                                         type: object
                                         properties:
                                             id: # Just the ID because the standard portion types are not expected to be created by normal users, so it will be always a reference to an already existing ID
@@ -228,8 +228,8 @@ components:
                                         type: integer
                                         format: int32
                                         example: 12345
-                                    standardPortionType:
-                                        $ref: '#/components/schemas/StandardPortionType'
+                                    standardPortion:
+                                        $ref: '#/components/schemas/StandardPortion'
                             -   $ref: '#/components/schemas/NutritionalValues'
                 portions:
                     type: array

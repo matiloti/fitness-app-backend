@@ -13,7 +13,7 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -38,7 +38,7 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -61,7 +61,7 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -87,7 +87,7 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -116,7 +116,7 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -147,7 +147,7 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -157,7 +157,7 @@ components:
                         saturatedFat: 4.5
                         salt: 2.2
                         sugar: 12.75
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 2
                         kcal: 323.5
                         fat: 13.32
@@ -181,7 +181,7 @@ components:
                 brand:
                     name: "The Best Grocery Store"
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -204,7 +204,7 @@ components:
                 brand:
                     id: 12345
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
@@ -232,7 +232,7 @@ components:
                 brand:
                     name: "The Best Grocery Store"
                 nutritionalValues:
-                    -   standardPortionType:
+                    -   standardPortion:
                             id: 1
                         kcal: 312.5
                         fat: 10.32
