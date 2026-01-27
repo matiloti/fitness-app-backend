@@ -1,0 +1,160 @@
+# =============================================================================
+# FitTrack Pro - Spring Boot Configuration
+# =============================================================================
+# Common settings for all profiles
+# Profile-specific settings override these in application-{profile}.yml
+# =============================================================================
+
+spring:
+  application:
+    name: fittrack-backend
+
+  # Jackson configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+
+  # Flyway configuration
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+  # Datasource - defaults overridden per profile
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+
+# Server configuration
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+
+# OpenAPI / Swagger
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+# Custom application properties
+app:
+  jwt:
+    secret: ${JWT_SECRET:default-secret-key-change-in-production-must-be-256-bits-minimum}
+    access-token-expiry: ${JWT_ACCESS_TOKEN_EXPIRY:900000}
+    refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY:604800000}
+
+  storage:
+    type: ${STORAGE_TYPE:local}
+    local:
+      path: ${STORAGE_LOCAL_PATH:./uploads}
+
+  cors:
+    allowed-origins: "*"
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: "*"
+
+---
+# =============================================================================
+# Development Profile
+# =============================================================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/fittrack}
+    username: ${SPRING_DATASOURCE_USERNAME:fittrack}
+    password: ${SPRING_DATASOURCE_PASSWORD:fittrack_dev_password}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    clean-disabled: false
+
+logging:
+  level:
+    root: INFO
+    com.fittrack: DEBUG
+    org.springframework.jdbc: DEBUG
+    org.springframework.security: DEBUG
+
+---
+# =============================================================================
+# Test Profile
+# =============================================================================
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:tc:postgresql:16:///fittrack_test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+  flyway:
+    clean-disabled: false
+
+logging:
+  level:
+    root: WARN
+    com.fittrack: DEBUG
+
+---
+# =============================================================================
+# Production Profile
+# =============================================================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+  flyway:
+    clean-disabled: true
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+
+logging:
+  level:
+    root: WARN
+    com.fittrack: INFO
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}
