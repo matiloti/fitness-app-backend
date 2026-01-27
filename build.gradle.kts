@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
+    id("org.flywaydb.flyway") version "10.8.1"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
 }
@@ -32,8 +33,8 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     // Flyway for database migrations
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.flywaydb:flyway-core:10.8.1")
+    implementation("org.flywaydb:flyway-database-postgresql:10.8.1")
 
     // JWT (jjwt)
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
