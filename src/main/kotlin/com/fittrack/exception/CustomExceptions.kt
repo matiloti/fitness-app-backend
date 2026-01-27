@@ -121,3 +121,53 @@ class ValidationException(
     message: String,
     val errors: Map<String, String> = emptyMap()
 ) : AppException("VALIDATION_ERROR", message)
+
+// ========== Day Exceptions ==========
+
+class DayNotFoundException(
+    message: String = "Day not found."
+) : AppException("DAY_NOT_FOUND", message)
+
+class InvalidDateException(
+    message: String = "Invalid date format."
+) : AppException("INVALID_DATE", message)
+
+class InvalidDateRangeException(
+    message: String = "Date range exceeds 90 days."
+) : AppException("INVALID_DATE_RANGE", message)
+
+class MissingProfileDataException(
+    message: String = "Profile metrics incomplete for calculations."
+) : AppException("MISSING_PROFILE_DATA", message)
+
+// ========== Meal Exceptions ==========
+
+class MealNotFoundException(
+    message: String = "Meal not found."
+) : AppException("MEAL_NOT_FOUND", message)
+
+class MealNotOwnedException(
+    message: String = "You don't have permission to access this meal."
+) : AppException("MEAL_NOT_OWNED", message)
+
+class MealItemNotFoundException(
+    message: String = "Meal item not found."
+) : AppException("ITEM_NOT_FOUND", message)
+
+class InvalidMealTypeException(
+    message: String = "Invalid meal type."
+) : AppException("INVALID_MEAL_TYPE", message)
+
+class InvalidQuantityException(
+    message: String = "Quantity must be positive."
+) : AppException("INVALID_QUANTITY", message)
+
+class InvalidItemTypeException(
+    message: String = "Invalid item type."
+) : AppException("INVALID_ITEM_TYPE", message)
+
+// ========== Recipe Exceptions ==========
+
+class RecipeNotFoundException(
+    message: String = "Recipe not found."
+) : AppException("RECIPE_NOT_FOUND", message)

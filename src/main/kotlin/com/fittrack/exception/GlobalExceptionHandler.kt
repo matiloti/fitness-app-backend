@@ -166,6 +166,98 @@ class GlobalExceptionHandler {
             .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
     }
 
+    // ========== Day Exceptions ==========
+
+    @ExceptionHandler(DayNotFoundException::class)
+    fun handleDayNotFound(ex: DayNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Day not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidDateException::class)
+    fun handleInvalidDate(ex: InvalidDateException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid date: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidDateRangeException::class)
+    fun handleInvalidDateRange(ex: InvalidDateRangeException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid date range: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(MissingProfileDataException::class)
+    fun handleMissingProfileData(ex: MissingProfileDataException): ResponseEntity<ErrorResponse> {
+        logger.debug("Missing profile data: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    // ========== Meal Exceptions ==========
+
+    @ExceptionHandler(MealNotFoundException::class)
+    fun handleMealNotFound(ex: MealNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Meal not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(MealNotOwnedException::class)
+    fun handleMealNotOwned(ex: MealNotOwnedException): ResponseEntity<ErrorResponse> {
+        logger.warn("Meal access denied: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(MealItemNotFoundException::class)
+    fun handleMealItemNotFound(ex: MealItemNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Meal item not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidMealTypeException::class)
+    fun handleInvalidMealType(ex: InvalidMealTypeException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid meal type: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidQuantityException::class)
+    fun handleInvalidQuantity(ex: InvalidQuantityException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid quantity: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidItemTypeException::class)
+    fun handleInvalidItemType(ex: InvalidItemTypeException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid item type: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(RecipeNotFoundException::class)
+    fun handleRecipeNotFound(ex: RecipeNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Recipe not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
     @ExceptionHandler(ValidationException::class)
     fun handleValidation(ex: ValidationException): ResponseEntity<ErrorResponse> {
         logger.debug("Validation error: ${ex.message}")
