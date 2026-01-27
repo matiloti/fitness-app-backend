@@ -7,7 +7,8 @@
 # -----------------------------------------------------------------------------
 # Stage 1: Build
 # -----------------------------------------------------------------------------
-FROM eclipse-temurin:21-jdk-alpine AS builder
+# Using non-alpine image to avoid native library issues on ARM64
+FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /app
 
@@ -18,25 +19,29 @@ COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY gradle.properties .
 
+# Gradle options to avoid native library issues on ARM64
+ENV GRADLE_OPTS="-Dorg.gradle.native=false"
+
 # Download dependencies (cached layer)
-RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
+RUN chmod +x gradlew && ./gradlew dependencies --no-daemon --no-watch-fs
 
 # Copy source code
 COPY src src
 
 # Build the application
-RUN ./gradlew bootJar --no-daemon -x test
+RUN ./gradlew bootJar --no-daemon --no-watch-fs -x test
 
 # -----------------------------------------------------------------------------
 # Stage 2: Runtime
 # -----------------------------------------------------------------------------
-FROM eclipse-temurin:21-jre-alpine AS runtime
+# Using non-alpine for consistency (larger but more compatible)
+FROM eclipse-temurin:21-jre AS runtime
 
 WORKDIR /app
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S fittrack && \
-    adduser -u 1001 -S fittrack -G fittrack
+# Create non-root user for security (Debian-style)
+RUN groupadd -g 1001 fittrack && \
+    useradd -u 1001 -g fittrack -m fittrack
 
 # Create directories for uploads and logs
 RUN mkdir -p /app/uploads /app/logs && \
@@ -51,9 +56,9 @@ USER fittrack
 # Expose port
 EXPOSE 8080
 
-# Health check
+# Health check (using curl which is available in Debian-based images)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+    CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 # JVM options for containers
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"

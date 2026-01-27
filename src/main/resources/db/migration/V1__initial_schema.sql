@@ -538,11 +538,12 @@ INSERT INTO activity_level_multipliers (activity_level, multiplier, description)
 -- ============================================================================
 
 CREATE TABLE fitness_goal_adjustments (
+    id SERIAL PRIMARY KEY,
     goal_type fitness_goal_type NOT NULL,
     intensity fitness_goal_intensity,
     calorie_adjustment INT NOT NULL,           -- Daily calorie adjustment (+/-)
     description VARCHAR(100) NOT NULL,
-    PRIMARY KEY (goal_type, intensity),
+    CONSTRAINT uq_goal_intensity UNIQUE NULLS NOT DISTINCT (goal_type, intensity),
     CONSTRAINT chk_maintain_no_intensity CHECK (
         (goal_type = 'MAINTAIN' AND intensity IS NULL) OR
         (goal_type != 'MAINTAIN' AND intensity IS NOT NULL)

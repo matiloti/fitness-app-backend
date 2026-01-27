@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
@@ -74,7 +75,7 @@ class UserRepository(private val jdbcTemplate: JdbcTemplate) {
             RETURNING *
         """.trimIndent()
 
-        return jdbcTemplate.query(sql, userRowMapper, id, email.lowercase(), passwordHash, name, now, now).first()
+        return jdbcTemplate.query(sql, userRowMapper, id, email.lowercase(), passwordHash, name, Timestamp.from(now), Timestamp.from(now)).first()
     }
 
     fun updatePassword(userId: UUID, newPasswordHash: String): Boolean {

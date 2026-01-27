@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
@@ -101,7 +102,7 @@ class MealRepository(private val jdbcTemplate: JdbcTemplate) {
 
         return jdbcTemplate.query(
             sql, mealRowMapper,
-            id, dayId, mealType.name, isCheatMeal, displayOrder, now, now
+            id, dayId, mealType.name, isCheatMeal, displayOrder, Timestamp.from(now), Timestamp.from(now)
         ).first()
     }
 
@@ -209,7 +210,7 @@ class MealRepository(private val jdbcTemplate: JdbcTemplate) {
             sql, mealItemRowMapper,
             id, mealId, foodId, recipeId, portionId, quantity, amountGrams,
             quickEntryName, isQuickEntry, calories, fat, carbs, protein,
-            salt, sugar, fiber, saturatedFat, displayOrder, now, now
+            salt, sugar, fiber, saturatedFat, displayOrder, Timestamp.from(now), Timestamp.from(now)
         ).first()
     }
 

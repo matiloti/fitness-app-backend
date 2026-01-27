@@ -258,6 +258,146 @@ class GlobalExceptionHandler {
             .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
     }
 
+    @ExceptionHandler(RecipeNotOwnedException::class)
+    fun handleRecipeNotOwned(ex: RecipeNotOwnedException): ResponseEntity<ErrorResponse> {
+        logger.warn("Recipe access denied: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(RecipeIngredientNotFoundException::class)
+    fun handleRecipeIngredientNotFound(ex: RecipeIngredientNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Recipe ingredient not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(RecipeStepNotFoundException::class)
+    fun handleRecipeStepNotFound(ex: RecipeStepNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Recipe step not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(LastIngredientException::class)
+    fun handleLastIngredient(ex: LastIngredientException): ResponseEntity<ErrorResponse> {
+        logger.debug("Cannot delete last ingredient: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidStepOrderException::class)
+    fun handleInvalidStepOrder(ex: InvalidStepOrderException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid step order: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    // ========== Body Metrics Exceptions ==========
+
+    @ExceptionHandler(BodyMetricsNotFoundException::class)
+    fun handleBodyMetricsNotFound(ex: BodyMetricsNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Body metrics not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(BodyMetricsNotOwnedException::class)
+    fun handleBodyMetricsNotOwned(ex: BodyMetricsNotOwnedException): ResponseEntity<ErrorResponse> {
+        logger.warn("Body metrics access denied: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(NoMeasurementsProvidedException::class)
+    fun handleNoMeasurementsProvided(ex: NoMeasurementsProvidedException): ResponseEntity<ErrorResponse> {
+        logger.debug("No measurements provided: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(PhotoNotFoundException::class)
+    fun handlePhotoNotFound(ex: PhotoNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Photo not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidPhotoPositionException::class)
+    fun handleInvalidPhotoPosition(ex: InvalidPhotoPositionException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid photo position: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(MaxPhotosExceededException::class)
+    fun handleMaxPhotosExceeded(ex: MaxPhotosExceededException): ResponseEntity<ErrorResponse> {
+        logger.debug("Max photos exceeded: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    // ========== Workout Exceptions ==========
+
+    @ExceptionHandler(WorkoutNotFoundException::class)
+    fun handleWorkoutNotFound(ex: WorkoutNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Workout not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(WorkoutNotOwnedException::class)
+    fun handleWorkoutNotOwned(ex: WorkoutNotOwnedException): ResponseEntity<ErrorResponse> {
+        logger.warn("Workout access denied: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidWorkoutTypeException::class)
+    fun handleInvalidWorkoutType(ex: InvalidWorkoutTypeException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid workout type: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidDurationException::class)
+    fun handleInvalidDuration(ex: InvalidDurationException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid duration: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(InvalidCaloriesException::class)
+    fun handleInvalidCalories(ex: InvalidCaloriesException): ResponseEntity<ErrorResponse> {
+        logger.debug("Invalid calories: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(MissingWeightException::class)
+    fun handleMissingWeight(ex: MissingWeightException): ResponseEntity<ErrorResponse> {
+        logger.debug("Missing weight: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
     @ExceptionHandler(ValidationException::class)
     fun handleValidation(ex: ValidationException): ResponseEntity<ErrorResponse> {
         logger.debug("Validation error: ${ex.message}")

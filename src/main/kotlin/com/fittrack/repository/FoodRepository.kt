@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
 
@@ -169,7 +170,7 @@ class FoodRepository(private val jdbcTemplate: JdbcTemplate) {
             id, profileId, name, categoryId, brandId, metricType.name,
             caloriesPer100, fatPer100, carbsPer100, proteinPer100,
             saltPer100, sugarPer100, fiberPer100, saturatedFatPer100,
-            now, now
+            Timestamp.from(now), Timestamp.from(now)
         ).first()
     }
 
@@ -297,7 +298,7 @@ class FoodRepository(private val jdbcTemplate: JdbcTemplate) {
             RETURNING *
         """.trimIndent()
 
-        return jdbcTemplate.query(sql, portionRowMapper, foodId, name, amountGrams, now).first()
+        return jdbcTemplate.query(sql, portionRowMapper, foodId, name, amountGrams, Timestamp.from(now)).first()
     }
 
     fun createPortions(foodId: UUID, portions: List<Pair<String, BigDecimal>>): List<FoodPortion> {

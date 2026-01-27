@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
@@ -76,7 +77,7 @@ class DayRepository(private val jdbcTemplate: JdbcTemplate) {
             RETURNING *
         """.trimIndent()
 
-        return jdbcTemplate.query(sql, dayRowMapper, id, profileId, date, now, now).first()
+        return jdbcTemplate.query(sql, dayRowMapper, id, profileId, date, Timestamp.from(now), Timestamp.from(now)).first()
     }
 
     fun findOrCreate(profileId: UUID, date: LocalDate): Day {

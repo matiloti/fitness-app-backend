@@ -38,3 +38,19 @@ enum class FitnessGoalIntensity(val adjustment: Int, val description: String) {
     HARD(750, "~0.75 kg/week"),
     EXTREME(1000, "~1 kg/week")
 }
+
+/**
+ * Workout type - maps to PostgreSQL workout_type enum
+ */
+enum class WorkoutType(val metValue: Double, val description: String) {
+    STRENGTH(5.0, "Strength Training"),
+    CARDIO_RUNNING(9.8, "Running"),
+    CARDIO_CYCLING(7.5, "Cycling"),
+    CARDIO_SWIMMING(8.0, "Swimming"),
+    HIIT(8.0, "High Intensity Interval Training"),
+    YOGA(2.5, "Yoga"),
+    PILATES(3.0, "Pilates"),
+    SPORTS(6.0, "General Sports"),
+    WALKING(3.5, "Walking"),
+    OTHER(5.0, "Other Exercise")
+}

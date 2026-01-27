@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
 
@@ -46,7 +47,7 @@ class RefreshTokenRepository(private val jdbcTemplate: JdbcTemplate) {
             RETURNING *
         """.trimIndent()
 
-        return jdbcTemplate.query(sql, refreshTokenRowMapper, id, profileId, tokenHash, expiresAt, now).first()
+        return jdbcTemplate.query(sql, refreshTokenRowMapper, id, profileId, tokenHash, Timestamp.from(expiresAt), Timestamp.from(now)).first()
     }
 
     fun findByTokenHash(tokenHash: String): RefreshToken? {
@@ -91,7 +92,7 @@ class RefreshTokenRepository(private val jdbcTemplate: JdbcTemplate) {
             RETURNING *
         """.trimIndent()
 
-        return jdbcTemplate.query(sql, passwordResetTokenRowMapper, id, profileId, tokenHash, expiresAt, now).first()
+        return jdbcTemplate.query(sql, passwordResetTokenRowMapper, id, profileId, tokenHash, Timestamp.from(expiresAt), Timestamp.from(now)).first()
     }
 
     fun findPasswordResetByTokenHash(tokenHash: String): PasswordResetToken? {
@@ -119,7 +120,7 @@ class RefreshTokenRepository(private val jdbcTemplate: JdbcTemplate) {
             SELECT COUNT(*) FROM password_reset_tokens
             WHERE profile_id = ? AND created_at > ?
         """.trimIndent()
-        return jdbcTemplate.queryForObject(sql, Int::class.java, profileId, since) ?: 0
+        return jdbcTemplate.queryForObject(sql, Int::class.java, profileId, Timestamp.from(since)) ?: 0
     }
 
     fun deleteExpiredPasswordResetTokens(): Int {

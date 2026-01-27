@@ -171,3 +171,85 @@ class InvalidItemTypeException(
 class RecipeNotFoundException(
     message: String = "Recipe not found."
 ) : AppException("RECIPE_NOT_FOUND", message)
+
+class RecipeNotOwnedException(
+    message: String = "You don't have permission to access this recipe."
+) : AppException("RECIPE_NOT_OWNED", message)
+
+class RecipeIngredientNotFoundException(
+    message: String = "Recipe ingredient not found."
+) : AppException("INGREDIENT_NOT_FOUND", message)
+
+class RecipeStepNotFoundException(
+    message: String = "Recipe step not found."
+) : AppException("STEP_NOT_FOUND", message)
+
+class LastIngredientException(
+    message: String = "Cannot delete the last ingredient from a recipe."
+) : AppException("LAST_INGREDIENT", message)
+
+class InvalidStepOrderException(
+    message: String = "Step IDs in reorder request don't match recipe steps."
+) : AppException("INVALID_STEP_ORDER", message)
+
+// ========== Body Metrics Exceptions ==========
+
+class BodyMetricsNotFoundException(
+    message: String = "Body metrics entry not found."
+) : AppException("METRICS_NOT_FOUND", message)
+
+class BodyMetricsNotOwnedException(
+    message: String = "You don't have permission to access this body metrics entry."
+) : AppException("METRICS_NOT_OWNED", message)
+
+class InvalidWeightException(
+    message: String = "Weight is out of valid range."
+) : AppException("INVALID_WEIGHT", message)
+
+class InvalidPercentageException(
+    message: String = "Percentage is out of 0-100 range."
+) : AppException("INVALID_PERCENTAGE", message)
+
+class NoMeasurementsProvidedException(
+    message: String = "At least one measurement (weight, body fat, or muscle mass) is required."
+) : AppException("NO_MEASUREMENTS", message)
+
+// ========== Progress Photo Exceptions ==========
+
+class PhotoNotFoundException(
+    message: String = "Progress photo not found."
+) : AppException("PHOTO_NOT_FOUND", message)
+
+class InvalidPhotoPositionException(
+    message: String = "Photo position is invalid."
+) : AppException("INVALID_POSITION", message)
+
+class MaxPhotosExceededException(
+    message: String = "Maximum 4 photos per body metrics entry (one per position)."
+) : AppException("MAX_PHOTOS_EXCEEDED", message)
+
+// ========== Workout Exceptions ==========
+
+class WorkoutNotFoundException(
+    message: String = "Workout not found."
+) : AppException("WORKOUT_NOT_FOUND", message)
+
+class WorkoutNotOwnedException(
+    message: String = "You don't have permission to access this workout."
+) : AppException("WORKOUT_NOT_OWNED", message)
+
+class InvalidWorkoutTypeException(
+    message: String = "Workout type is not valid."
+) : AppException("INVALID_WORKOUT_TYPE", message)
+
+class InvalidDurationException(
+    message: String = "Duration must be positive."
+) : AppException("INVALID_DURATION", message)
+
+class InvalidCaloriesException(
+    message: String = "Calories must be non-negative."
+) : AppException("INVALID_CALORIES", message)
+
+class MissingWeightException(
+    message: String = "No weight logged for calorie estimation. Please log your weight first."
+) : AppException("MISSING_WEIGHT", message)
