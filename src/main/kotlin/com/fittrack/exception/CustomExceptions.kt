@@ -75,6 +75,46 @@ class InvalidFileTypeException(
     message: String = "File type is not supported."
 ) : AppException("INVALID_FILE_TYPE", message)
 
+// ========== Food Exceptions ==========
+
+class FoodNotFoundException(
+    message: String = "Food not found."
+) : AppException("FOOD_NOT_FOUND", message)
+
+class FoodNotOwnedException(
+    message: String = "You don't have permission to access this food."
+) : AppException("FOOD_NOT_OWNED", message)
+
+class FoodInUseException(
+    message: String = "Food is used in recipes and cannot be deleted."
+) : AppException("FOOD_IN_USE", message)
+
+class CategoryNotFoundException(
+    message: String = "Category not found."
+) : AppException("CATEGORY_NOT_FOUND", message)
+
+class PortionNotFoundException(
+    message: String = "Portion not found."
+) : AppException("PORTION_NOT_FOUND", message)
+
+class PortionAlreadyExistsException(
+    portionName: String
+) : AppException("PORTION_ALREADY_EXISTS", "Portion '$portionName' already exists for this food.")
+
+// ========== Brand Exceptions ==========
+
+class BrandNotFoundException(
+    message: String = "Brand not found."
+) : AppException("BRAND_NOT_FOUND", message)
+
+class BrandNotOwnedException(
+    message: String = "You don't have permission to access this brand."
+) : AppException("BRAND_NOT_OWNED", message)
+
+class BrandAlreadyExistsException(
+    brandName: String
+) : AppException("BRAND_ALREADY_EXISTS", "Brand '$brandName' already exists.")
+
 // ========== Validation Exception ==========
 
 class ValidationException(

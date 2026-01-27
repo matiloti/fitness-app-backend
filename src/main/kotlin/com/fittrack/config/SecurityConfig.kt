@@ -60,7 +60,8 @@ class SecurityConfig(
                     .requestMatchers(
                         "/api/v1/profile/countries",
                         "/api/v1/profile/activity-levels",
-                        "/api/v1/profile/fitness-goals"
+                        "/api/v1/profile/fitness-goals",
+                        "/api/v1/categories"
                     ).permitAll()
                     // Actuator and docs
                     .requestMatchers(

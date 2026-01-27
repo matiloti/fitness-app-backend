@@ -29,6 +29,10 @@ abstract class IntegrationTestBase {
     fun cleanupTables() {
         // Clean tables in reverse dependency order - wrapped in try-catch for initialization failures
         try {
+            jdbcTemplate.execute("DELETE FROM recent_foods")
+            jdbcTemplate.execute("DELETE FROM food_portions")
+            jdbcTemplate.execute("DELETE FROM foods")
+            jdbcTemplate.execute("DELETE FROM brands")
             jdbcTemplate.execute("DELETE FROM password_reset_tokens")
             jdbcTemplate.execute("DELETE FROM refresh_tokens")
             jdbcTemplate.execute("DELETE FROM profiles")

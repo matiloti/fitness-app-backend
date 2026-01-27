@@ -90,6 +90,82 @@ class GlobalExceptionHandler {
             .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
     }
 
+    // ========== Food Exceptions ==========
+
+    @ExceptionHandler(FoodNotFoundException::class)
+    fun handleFoodNotFound(ex: FoodNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Food not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(FoodNotOwnedException::class)
+    fun handleFoodNotOwned(ex: FoodNotOwnedException): ResponseEntity<ErrorResponse> {
+        logger.warn("Food access denied: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(FoodInUseException::class)
+    fun handleFoodInUse(ex: FoodInUseException): ResponseEntity<ErrorResponse> {
+        logger.debug("Food in use: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(CategoryNotFoundException::class)
+    fun handleCategoryNotFound(ex: CategoryNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Category not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(PortionNotFoundException::class)
+    fun handlePortionNotFound(ex: PortionNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Portion not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(PortionAlreadyExistsException::class)
+    fun handlePortionAlreadyExists(ex: PortionAlreadyExistsException): ResponseEntity<ErrorResponse> {
+        logger.debug("Portion already exists: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    // ========== Brand Exceptions ==========
+
+    @ExceptionHandler(BrandNotFoundException::class)
+    fun handleBrandNotFound(ex: BrandNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.debug("Brand not found: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(BrandNotOwnedException::class)
+    fun handleBrandNotOwned(ex: BrandNotOwnedException): ResponseEntity<ErrorResponse> {
+        logger.warn("Brand access denied: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
+    @ExceptionHandler(BrandAlreadyExistsException::class)
+    fun handleBrandAlreadyExists(ex: BrandAlreadyExistsException): ResponseEntity<ErrorResponse> {
+        logger.debug("Brand already exists: ${ex.message}")
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(ErrorResponse(ErrorDetail(ex.errorCode, ex.message)))
+    }
+
     @ExceptionHandler(ValidationException::class)
     fun handleValidation(ex: ValidationException): ResponseEntity<ErrorResponse> {
         logger.debug("Validation error: ${ex.message}")
