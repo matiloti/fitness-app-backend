@@ -444,4 +444,158 @@ class WorkoutControllerIntegrationTest : IntegrationTestBase() {
                 .andExpect(jsonPath("$.summary.totalWorkouts").value(0))
         }
     }
+
+    @Nested
+    @DisplayName("GET /api/v1/workouts/streak")
+    inner class GetWorkoutStreak {
+
+        @Test
+        fun `should return current streak for consecutive days`() {
+            createWorkout(today, WorkoutType.STRENGTH, "Today Workout", 60)
+            createWorkout(today.minusDays(1), WorkoutType.CARDIO_RUNNING, "Yesterday Workout", 30)
+
+            mockMvc.perform(
+                get("/api/v1/workouts/streak")
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.currentStreak").value(2))
+                .andExpect(jsonPath("$.longestStreak").value(2))
+                .andExpect(jsonPath("$.lastWorkoutDate").value(today.toString()))
+                .andExpect(jsonPath("$.isActiveToday").value(true))
+        }
+
+        @Test
+        fun `should return zero streak when no consecutive days from today or yesterday`() {
+            createWorkout(today.minusDays(5), WorkoutType.STRENGTH, "Old Workout", 60)
+
+            mockMvc.perform(
+                get("/api/v1/workouts/streak")
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.currentStreak").value(0))
+                .andExpect(jsonPath("$.longestStreak").value(1))
+                .andExpect(jsonPath("$.isActiveToday").value(false))
+        }
+
+        @Test
+        fun `should return zero streak when no workouts exist`() {
+            mockMvc.perform(
+                get("/api/v1/workouts/streak")
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.currentStreak").value(0))
+                .andExpect(jsonPath("$.longestStreak").value(0))
+                .andExpect(jsonPath("$.lastWorkoutDate").doesNotExist())
+                .andExpect(jsonPath("$.isActiveToday").value(false))
+        }
+
+        @Test
+        fun `should return 401 without authentication`() {
+            mockMvc.perform(get("/api/v1/workouts/streak"))
+                .andExpect(status().isUnauthorized)
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/v1/workouts/stats")
+    inner class GetWorkoutStats {
+
+        @Test
+        fun `should return overall statistics with monthly breakdown`() {
+            createWorkout(today, WorkoutType.STRENGTH, "Upper Body", 60)
+            createWorkout(today.minusDays(1), WorkoutType.CARDIO_RUNNING, "Morning Run", 30)
+            createWorkout(today.minusDays(2), WorkoutType.STRENGTH, "Lower Body", 45)
+
+            mockMvc.perform(
+                get("/api/v1/workouts/stats")
+                    .param("startDate", today.minusDays(30).toString())
+                    .param("endDate", today.toString())
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.totalWorkouts").value(3))
+                .andExpect(jsonPath("$.totalDurationMinutes").value(135))
+                .andExpect(jsonPath("$.totalCaloriesBurned").exists())
+                .andExpect(jsonPath("$.averageDurationMinutes").value(45))
+                .andExpect(jsonPath("$.monthlyStats").isArray)
+        }
+
+        @Test
+        fun `should return empty stats when no workouts`() {
+            mockMvc.perform(
+                get("/api/v1/workouts/stats")
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.totalWorkouts").value(0))
+                .andExpect(jsonPath("$.monthlyStats").isEmpty)
+        }
+
+        @Test
+        fun `should return 401 without authentication`() {
+            mockMvc.perform(get("/api/v1/workouts/stats"))
+                .andExpect(status().isUnauthorized)
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/v1/workouts/weekly")
+    inner class GetWeeklySummary {
+
+        @Test
+        fun `should return 7 days summary`() {
+            createWorkout(today, WorkoutType.STRENGTH, "Today Workout", 60)
+
+            mockMvc.perform(
+                get("/api/v1/workouts/weekly")
+                    .param("date", today.toString())
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.days").isArray)
+                .andExpect(jsonPath("$.days.length()").value(7))
+                .andExpect(jsonPath("$.totalWorkouts").value(1))
+                .andExpect(jsonPath("$.weekStartDate").exists())
+                .andExpect(jsonPath("$.weekEndDate").exists())
+        }
+
+        @Test
+        fun `should correctly indicate days with workouts`() {
+            val monday = today.with(java.time.DayOfWeek.MONDAY)
+            createWorkout(monday, WorkoutType.STRENGTH, "Monday Workout", 60)
+            createWorkout(monday.plusDays(2), WorkoutType.CARDIO_RUNNING, "Wednesday Workout", 30)
+
+            mockMvc.perform(
+                get("/api/v1/workouts/weekly")
+                    .param("date", monday.toString())
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.days[0].hasWorkout").value(true))
+                .andExpect(jsonPath("$.days[0].dayOfWeek").value("MON"))
+                .andExpect(jsonPath("$.days[1].hasWorkout").value(false))
+                .andExpect(jsonPath("$.days[2].hasWorkout").value(true))
+                .andExpect(jsonPath("$.totalWorkouts").value(2))
+        }
+
+        @Test
+        fun `should use current date when date parameter not provided`() {
+            mockMvc.perform(
+                get("/api/v1/workouts/weekly")
+                    .header("Authorization", "Bearer $accessToken")
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.days").isArray)
+                .andExpect(jsonPath("$.days.length()").value(7))
+        }
+
+        @Test
+        fun `should return 401 without authentication`() {
+            mockMvc.perform(get("/api/v1/workouts/weekly"))
+                .andExpect(status().isUnauthorized)
+        }
+    }
 }

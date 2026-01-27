@@ -16,8 +16,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -555,6 +557,209 @@ class WorkoutServiceTest {
             assertEquals(15, response.summary.totalWorkouts)
             assertEquals(825, response.summary.totalDurationMinutes)
             assertEquals(5250, response.summary.totalCaloriesBurned)
+        }
+    }
+
+    @Nested
+    @DisplayName("getWorkoutStreak")
+    inner class GetWorkoutStreak {
+
+        @Test
+        fun `should return current streak when user has consecutive days`() {
+            // Today and yesterday have workouts = 2 day streak
+            val workoutDates = listOf(today, today.minusDays(1))
+            every { workoutRepository.getDistinctWorkoutDates(testProfileId) } returns workoutDates
+
+            val response = workoutService.getWorkoutStreak(testProfileId)
+
+            assertNotNull(response)
+            assertEquals(2, response.currentStreak)
+            assertEquals(2, response.longestStreak)
+            assertEquals(today, response.lastWorkoutDate)
+            assertTrue(response.isActiveToday)
+        }
+
+        @Test
+        fun `should return streak starting from yesterday when no workout today`() {
+            // Yesterday and day before = 2 day streak, but not active today
+            val workoutDates = listOf(today.minusDays(1), today.minusDays(2))
+            every { workoutRepository.getDistinctWorkoutDates(testProfileId) } returns workoutDates
+
+            val response = workoutService.getWorkoutStreak(testProfileId)
+
+            assertNotNull(response)
+            assertEquals(2, response.currentStreak)
+            assertEquals(today.minusDays(1), response.lastWorkoutDate)
+            assertFalse(response.isActiveToday)
+        }
+
+        @Test
+        fun `should return zero streak when streak is broken`() {
+            // Last workout was 3 days ago = streak broken
+            val workoutDates = listOf(today.minusDays(3), today.minusDays(4))
+            every { workoutRepository.getDistinctWorkoutDates(testProfileId) } returns workoutDates
+
+            val response = workoutService.getWorkoutStreak(testProfileId)
+
+            assertNotNull(response)
+            assertEquals(0, response.currentStreak)
+            assertEquals(2, response.longestStreak)
+            assertEquals(today.minusDays(3), response.lastWorkoutDate)
+            assertFalse(response.isActiveToday)
+        }
+
+        @Test
+        fun `should return zero streak when no workouts exist`() {
+            every { workoutRepository.getDistinctWorkoutDates(testProfileId) } returns emptyList()
+
+            val response = workoutService.getWorkoutStreak(testProfileId)
+
+            assertNotNull(response)
+            assertEquals(0, response.currentStreak)
+            assertEquals(0, response.longestStreak)
+            assertNull(response.lastWorkoutDate)
+            assertFalse(response.isActiveToday)
+        }
+
+        @Test
+        fun `should calculate longest streak correctly when it differs from current`() {
+            // Longest streak was 5 days ago for 3 days, current streak is 1 day
+            val workoutDates = listOf(
+                today,                    // Current: 1 day
+                today.minusDays(5),       // Old streak: 3 days
+                today.minusDays(6),
+                today.minusDays(7)
+            )
+            every { workoutRepository.getDistinctWorkoutDates(testProfileId) } returns workoutDates
+
+            val response = workoutService.getWorkoutStreak(testProfileId)
+
+            assertNotNull(response)
+            assertEquals(1, response.currentStreak)
+            assertEquals(3, response.longestStreak)
+            assertTrue(response.isActiveToday)
+        }
+    }
+
+    @Nested
+    @DisplayName("getWorkoutStats")
+    inner class GetWorkoutStats {
+
+        @Test
+        fun `should return overall statistics`() {
+            val startDate = today.minusDays(90)
+            val endDate = today
+
+            every { workoutRepository.getSummaryStats(testProfileId, startDate, endDate) } returns mapOf(
+                "total_workouts" to 47L,
+                "total_duration" to 2115L,
+                "total_calories" to BigDecimal("12500"),
+                "avg_duration" to BigDecimal("45"),
+                "avg_calories" to BigDecimal("266")
+            )
+            every { workoutRepository.getMonthlyStats(testProfileId, startDate, endDate) } returns listOf(
+                mapOf(
+                    "month" to "2026-01",
+                    "total_workouts" to 12L,
+                    "total_duration" to 540L,
+                    "total_calories" to BigDecimal("3200"),
+                    "avg_duration" to BigDecimal("45")
+                )
+            )
+
+            val response = workoutService.getWorkoutStats(testProfileId, startDate, endDate)
+
+            assertNotNull(response)
+            assertEquals(47, response.totalWorkouts)
+            assertEquals(2115, response.totalDurationMinutes)
+            assertEquals(12500, response.totalCaloriesBurned)
+            assertEquals(45, response.averageDurationMinutes)
+            assertEquals(1, response.monthlyStats.size)
+            assertEquals("2026-01", response.monthlyStats[0].month)
+        }
+
+        @Test
+        fun `should return empty stats when no workouts`() {
+            val startDate = today.minusDays(30)
+            val endDate = today
+
+            every { workoutRepository.getSummaryStats(testProfileId, startDate, endDate) } returns mapOf(
+                "total_workouts" to 0L,
+                "total_duration" to 0L,
+                "total_calories" to BigDecimal.ZERO,
+                "avg_duration" to BigDecimal.ZERO,
+                "avg_calories" to BigDecimal.ZERO
+            )
+            every { workoutRepository.getMonthlyStats(testProfileId, startDate, endDate) } returns emptyList()
+
+            val response = workoutService.getWorkoutStats(testProfileId, startDate, endDate)
+
+            assertNotNull(response)
+            assertEquals(0, response.totalWorkouts)
+            assertEquals(0, response.totalDurationMinutes)
+            assertTrue(response.monthlyStats.isEmpty())
+        }
+    }
+
+    @Nested
+    @DisplayName("getWeeklySummary")
+    inner class GetWeeklySummary {
+
+        @Test
+        fun `should return 7 days summary for current week`() {
+            val weekStart = today.with(java.time.DayOfWeek.MONDAY)
+
+            every { workoutRepository.getWorkoutsForDateRange(testProfileId, weekStart, weekStart.plusDays(6)) } returns listOf(
+                testWorkout.copy(date = weekStart, durationMinutes = 60, caloriesBurnedEstimated = BigDecimal("400")),
+                testWorkout.copy(date = weekStart.plusDays(1), durationMinutes = 45, caloriesBurnedEstimated = BigDecimal("300"))
+            )
+
+            val response = workoutService.getWeeklySummary(testProfileId, today)
+
+            assertNotNull(response)
+            assertEquals(7, response.days.size)
+            assertEquals(weekStart, response.weekStartDate)
+            assertEquals(2, response.totalWorkouts)
+        }
+
+        @Test
+        fun `should correctly identify days with and without workouts`() {
+            val weekStart = today.with(java.time.DayOfWeek.MONDAY)
+
+            every { workoutRepository.getWorkoutsForDateRange(testProfileId, weekStart, weekStart.plusDays(6)) } returns listOf(
+                testWorkout.copy(date = weekStart)
+            )
+
+            val response = workoutService.getWeeklySummary(testProfileId, today)
+
+            val mondayIndicator = response.days.find { it.date == weekStart }
+            val tuesdayIndicator = response.days.find { it.date == weekStart.plusDays(1) }
+
+            assertNotNull(mondayIndicator)
+            assertTrue(mondayIndicator!!.hasWorkout)
+            assertEquals(1, mondayIndicator.workoutCount)
+
+            assertNotNull(tuesdayIndicator)
+            assertFalse(tuesdayIndicator!!.hasWorkout)
+            assertEquals(0, tuesdayIndicator.workoutCount)
+        }
+
+        @Test
+        fun `should aggregate multiple workouts on same day`() {
+            val weekStart = today.with(java.time.DayOfWeek.MONDAY)
+
+            every { workoutRepository.getWorkoutsForDateRange(testProfileId, weekStart, weekStart.plusDays(6)) } returns listOf(
+                testWorkout.copy(date = weekStart, durationMinutes = 60, caloriesBurnedEstimated = BigDecimal("400")),
+                testWorkout.copy(date = weekStart, durationMinutes = 30, caloriesBurnedEstimated = BigDecimal("200"))
+            )
+
+            val response = workoutService.getWeeklySummary(testProfileId, today)
+
+            val mondayIndicator = response.days.find { it.date == weekStart }
+            assertNotNull(mondayIndicator)
+            assertEquals(2, mondayIndicator!!.workoutCount)
+            assertEquals(90, mondayIndicator.totalDurationMinutes)
+            assertEquals(600, mondayIndicator.totalCaloriesBurned)
         }
     }
 }

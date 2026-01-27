@@ -4,9 +4,12 @@ import com.fittrack.model.WorkoutType
 import com.fittrack.model.dto.workout.CalorieEstimateResponse
 import com.fittrack.model.dto.workout.CreateWorkoutRequest
 import com.fittrack.model.dto.workout.UpdateWorkoutRequest
+import com.fittrack.model.dto.workout.WeeklySummaryResponse
 import com.fittrack.model.dto.workout.WorkoutCreateResponse
 import com.fittrack.model.dto.workout.WorkoutDetailResponse
 import com.fittrack.model.dto.workout.WorkoutListResponse
+import com.fittrack.model.dto.workout.WorkoutStatsResponse
+import com.fittrack.model.dto.workout.WorkoutStreakResponse
 import com.fittrack.model.dto.workout.WorkoutSummaryResponse
 import com.fittrack.model.dto.workout.WorkoutTypesResponse
 import com.fittrack.security.UserPrincipal
@@ -124,6 +127,41 @@ class WorkoutController(private val workoutService: WorkoutService) {
             startDate = effectiveStartDate,
             endDate = effectiveEndDate
         )
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/streak")
+    fun getWorkoutStreak(
+        @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<WorkoutStreakResponse> {
+        val response = workoutService.getWorkoutStreak(principal.id)
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/stats")
+    fun getWorkoutStats(
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate?,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate?,
+        @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<WorkoutStatsResponse> {
+        val effectiveEndDate = endDate ?: LocalDate.now()
+        val effectiveStartDate = startDate ?: effectiveEndDate.minusDays(90)
+
+        val response = workoutService.getWorkoutStats(
+            profileId = principal.id,
+            startDate = effectiveStartDate,
+            endDate = effectiveEndDate
+        )
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/weekly")
+    fun getWeeklySummary(
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate?,
+        @AuthenticationPrincipal principal: UserPrincipal
+    ): ResponseEntity<WeeklySummaryResponse> {
+        val effectiveDate = date ?: LocalDate.now()
+        val response = workoutService.getWeeklySummary(principal.id, effectiveDate)
         return ResponseEntity.ok(response)
     }
 }

@@ -10,16 +10,21 @@ import com.fittrack.model.WorkoutTypeMet
 import com.fittrack.model.dto.workout.CalorieEstimateResponse
 import com.fittrack.model.dto.workout.CalculationDetails
 import com.fittrack.model.dto.workout.CreateWorkoutRequest
+import com.fittrack.model.dto.workout.DayWorkoutIndicator
+import com.fittrack.model.dto.workout.MonthlyStats
 import com.fittrack.model.dto.workout.PageInfo
 import com.fittrack.model.dto.workout.PeriodInfo
 import com.fittrack.model.dto.workout.SummaryStats
 import com.fittrack.model.dto.workout.UpdateWorkoutRequest
 import com.fittrack.model.dto.workout.WeeklyTrend
+import com.fittrack.model.dto.workout.WeeklySummaryResponse
 import com.fittrack.model.dto.workout.WorkoutByType
 import com.fittrack.model.dto.workout.WorkoutCreateResponse
 import com.fittrack.model.dto.workout.WorkoutDetailResponse
 import com.fittrack.model.dto.workout.WorkoutListItem
 import com.fittrack.model.dto.workout.WorkoutListResponse
+import com.fittrack.model.dto.workout.WorkoutStatsResponse
+import com.fittrack.model.dto.workout.WorkoutStreakResponse
 import com.fittrack.model.dto.workout.WorkoutSummary
 import com.fittrack.model.dto.workout.WorkoutSummaryResponse
 import com.fittrack.model.dto.workout.WorkoutTypeInfo
@@ -30,8 +35,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 import java.util.UUID
 import kotlin.math.ceil
 
@@ -319,6 +327,184 @@ class WorkoutService(
 
     fun getWorkoutsByDate(date: LocalDate, profileId: UUID): List<Workout> {
         return workoutRepository.findByDateAndProfileId(date, profileId)
+    }
+
+    // ========== Streak, Stats, and Weekly Summary ==========
+
+    /**
+     * Calculate workout streak for a user.
+     * Current streak = consecutive days with workouts starting from today or yesterday.
+     * Longest streak = maximum consecutive days with workouts ever.
+     */
+    fun getWorkoutStreak(profileId: UUID): WorkoutStreakResponse {
+        val workoutDates = workoutRepository.getDistinctWorkoutDates(profileId)
+
+        if (workoutDates.isEmpty()) {
+            return WorkoutStreakResponse(
+                currentStreak = 0,
+                longestStreak = 0,
+                lastWorkoutDate = null,
+                streakStartDate = null,
+                isActiveToday = false
+            )
+        }
+
+        val today = LocalDate.now()
+        val lastWorkoutDate = workoutDates.first()
+        val isActiveToday = lastWorkoutDate == today
+
+        // Calculate current streak
+        val currentStreak = calculateCurrentStreak(workoutDates, today)
+
+        // Calculate longest streak
+        val longestStreak = calculateLongestStreak(workoutDates)
+
+        // Calculate streak start date
+        val streakStartDate = if (currentStreak > 0) {
+            if (isActiveToday) today.minusDays(currentStreak.toLong() - 1)
+            else lastWorkoutDate.minusDays(currentStreak.toLong() - 1)
+        } else null
+
+        return WorkoutStreakResponse(
+            currentStreak = currentStreak,
+            longestStreak = longestStreak,
+            lastWorkoutDate = lastWorkoutDate,
+            streakStartDate = streakStartDate,
+            isActiveToday = isActiveToday
+        )
+    }
+
+    private fun calculateCurrentStreak(dates: List<LocalDate>, today: LocalDate): Int {
+        if (dates.isEmpty()) return 0
+
+        val yesterday = today.minusDays(1)
+        val mostRecent = dates.first()
+
+        // Current streak only counts if most recent workout is today or yesterday
+        if (mostRecent != today && mostRecent != yesterday) {
+            return 0
+        }
+
+        var streak = 1
+        var expectedDate = mostRecent.minusDays(1)
+
+        for (i in 1 until dates.size) {
+            val currentDate = dates[i]
+            if (currentDate == expectedDate) {
+                streak++
+                expectedDate = expectedDate.minusDays(1)
+            } else {
+                break
+            }
+        }
+
+        return streak
+    }
+
+    private fun calculateLongestStreak(dates: List<LocalDate>): Int {
+        if (dates.isEmpty()) return 0
+
+        var longestStreak = 1
+        var currentStreak = 1
+
+        // dates are sorted DESC, so we iterate backwards in time
+        for (i in 1 until dates.size) {
+            val prevDate = dates[i - 1]
+            val currentDate = dates[i]
+
+            if (ChronoUnit.DAYS.between(currentDate, prevDate) == 1L) {
+                currentStreak++
+                longestStreak = maxOf(longestStreak, currentStreak)
+            } else {
+                currentStreak = 1
+            }
+        }
+
+        return longestStreak
+    }
+
+    /**
+     * Get overall workout statistics with monthly breakdown.
+     */
+    fun getWorkoutStats(
+        profileId: UUID,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): WorkoutStatsResponse {
+        val summaryStats = workoutRepository.getSummaryStats(profileId, startDate, endDate)
+        val monthlyStatsRaw = workoutRepository.getMonthlyStats(profileId, startDate, endDate)
+
+        val totalWorkouts = (summaryStats["total_workouts"] as? Number)?.toInt() ?: 0
+        val totalDuration = (summaryStats["total_duration"] as? Number)?.toInt() ?: 0
+        val totalCalories = (summaryStats["total_calories"] as? BigDecimal)?.toInt() ?: 0
+        val avgDuration = (summaryStats["avg_duration"] as? BigDecimal)?.toInt() ?: 0
+        val avgCalories = (summaryStats["avg_calories"] as? BigDecimal)?.toInt() ?: 0
+
+        val monthlyStats = monthlyStatsRaw.map { row ->
+            MonthlyStats(
+                month = row["month"] as String,
+                totalWorkouts = (row["total_workouts"] as Number).toInt(),
+                totalDurationMinutes = (row["total_duration"] as Number).toInt(),
+                totalCaloriesBurned = (row["total_calories"] as? BigDecimal)?.toInt() ?: 0,
+                averageDurationMinutes = (row["avg_duration"] as? BigDecimal)?.toInt() ?: 0
+            )
+        }
+
+        return WorkoutStatsResponse(
+            totalWorkouts = totalWorkouts,
+            totalDurationMinutes = totalDuration,
+            totalCaloriesBurned = totalCalories,
+            averageDurationMinutes = avgDuration,
+            averageCaloriesPerWorkout = avgCalories,
+            monthlyStats = monthlyStats
+        )
+    }
+
+    /**
+     * Get weekly summary showing each day of the week with workout indicators.
+     */
+    fun getWeeklySummary(profileId: UUID, date: LocalDate): WeeklySummaryResponse {
+        // Get Monday of the week containing the provided date
+        val weekStart = date.with(DayOfWeek.MONDAY)
+        val weekEnd = weekStart.plusDays(6)
+
+        val workouts = workoutRepository.getWorkoutsForDateRange(profileId, weekStart, weekEnd)
+
+        // Group workouts by date
+        val workoutsByDate = workouts.groupBy { it.date }
+
+        // Build day indicators for all 7 days
+        val days = (0..6).map { dayOffset ->
+            val dayDate = weekStart.plusDays(dayOffset.toLong())
+            val dayWorkouts = workoutsByDate[dayDate] ?: emptyList()
+
+            val totalDuration = dayWorkouts.sumOf { it.durationMinutes }
+            val totalCalories = dayWorkouts.sumOf {
+                it.caloriesBurned?.toInt() ?: 0
+            }
+
+            DayWorkoutIndicator(
+                date = dayDate,
+                dayOfWeek = dayDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH).uppercase(),
+                hasWorkout = dayWorkouts.isNotEmpty(),
+                workoutCount = dayWorkouts.size,
+                totalDurationMinutes = totalDuration,
+                totalCaloriesBurned = totalCalories
+            )
+        }
+
+        val totalWorkouts = workouts.size
+        val totalDuration = workouts.sumOf { it.durationMinutes }
+        val totalCalories = workouts.sumOf { it.caloriesBurned?.toInt() ?: 0 }
+
+        return WeeklySummaryResponse(
+            weekStartDate = weekStart,
+            weekEndDate = weekEnd,
+            days = days,
+            totalWorkouts = totalWorkouts,
+            totalDurationMinutes = totalDuration,
+            totalCaloriesBurned = totalCalories
+        )
     }
 
     // ========== Helper Methods ==========

@@ -286,4 +286,62 @@ class WorkoutRepository(private val jdbcTemplate: JdbcTemplate) {
 
         return jdbcTemplate.queryForMap(sql, profileId, startDate, endDate)
     }
+
+    // ========== Streak & Statistics Methods ==========
+
+    /**
+     * Get all distinct dates with workouts for a profile, ordered by date descending.
+     * Used for streak calculation.
+     */
+    fun getDistinctWorkoutDates(profileId: UUID): List<LocalDate> {
+        val sql = """
+            SELECT DISTINCT date
+            FROM workouts
+            WHERE profile_id = ?
+            ORDER BY date DESC
+        """.trimIndent()
+
+        return jdbcTemplate.queryForList(sql, LocalDate::class.java, profileId)
+    }
+
+    /**
+     * Get monthly aggregated statistics for a profile within a date range.
+     */
+    fun getMonthlyStats(
+        profileId: UUID,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Map<String, Any>> {
+        val sql = """
+            SELECT
+                TO_CHAR(date, 'YYYY-MM') as month,
+                COUNT(*) as total_workouts,
+                COALESCE(SUM(duration_minutes), 0) as total_duration,
+                COALESCE(SUM(COALESCE(calories_burned_actual, calories_burned_estimated)), 0) as total_calories,
+                COALESCE(AVG(duration_minutes), 0) as avg_duration
+            FROM workouts
+            WHERE profile_id = ? AND date >= ? AND date <= ?
+            GROUP BY TO_CHAR(date, 'YYYY-MM')
+            ORDER BY month DESC
+        """.trimIndent()
+
+        return jdbcTemplate.queryForList(sql, profileId, startDate, endDate)
+    }
+
+    /**
+     * Get all workouts for a date range (used for weekly summary).
+     */
+    fun getWorkoutsForDateRange(
+        profileId: UUID,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Workout> {
+        val sql = """
+            SELECT * FROM workouts
+            WHERE profile_id = ? AND date >= ? AND date <= ?
+            ORDER BY date ASC, created_at ASC
+        """.trimIndent()
+
+        return jdbcTemplate.query(sql, workoutRowMapper, profileId, startDate, endDate)
+    }
 }

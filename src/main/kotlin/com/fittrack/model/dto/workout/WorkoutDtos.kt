@@ -219,3 +219,52 @@ data class WorkoutSummaryResponse(
     val byType: List<WorkoutByType>,
     val weeklyTrend: List<WeeklyTrend>
 )
+
+// ========== Workout Streak Response ==========
+
+data class WorkoutStreakResponse(
+    val currentStreak: Int,
+    val longestStreak: Int,
+    val lastWorkoutDate: LocalDate?,
+    val streakStartDate: LocalDate?,
+    val isActiveToday: Boolean
+)
+
+// ========== Workout Statistics Response ==========
+
+data class MonthlyStats(
+    val month: String,            // e.g., "2026-01"
+    val totalWorkouts: Int,
+    val totalDurationMinutes: Int,
+    val totalCaloriesBurned: Int,
+    val averageDurationMinutes: Int
+)
+
+data class WorkoutStatsResponse(
+    val totalWorkouts: Int,
+    val totalDurationMinutes: Int,
+    val totalCaloriesBurned: Int,
+    val averageDurationMinutes: Int,
+    val averageCaloriesPerWorkout: Int,
+    val monthlyStats: List<MonthlyStats>
+)
+
+// ========== Weekly Summary Response ==========
+
+data class DayWorkoutIndicator(
+    val date: LocalDate,
+    val dayOfWeek: String,        // e.g., "MON", "TUE"
+    val hasWorkout: Boolean,
+    val workoutCount: Int,
+    val totalDurationMinutes: Int,
+    val totalCaloriesBurned: Int
+)
+
+data class WeeklySummaryResponse(
+    val weekStartDate: LocalDate,
+    val weekEndDate: LocalDate,
+    val days: List<DayWorkoutIndicator>,
+    val totalWorkouts: Int,
+    val totalDurationMinutes: Int,
+    val totalCaloriesBurned: Int
+)
